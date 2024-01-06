@@ -1,0 +1,30 @@
+.font-type{
+    -fx-font-family: 'CoFo Sans', sans-serif;
+}
+
+.primary-color{
+    -fx-background-color: #383838;
+}
+
+.secondary-color{
+    -fx-background-color: #282828;
+}
+
+.tertiary-color{
+    -fx-background-color: #D81159;
+}
+
+.quaternary-color{
+    -fx-background-color: #BEB7A4;
+}
+
+.text-color{
+    -fx-text-fill: #FFFFFF;
+}
+.round-border{
+    -fx-background-color: 100;
+}
+
+.transparent{
+    -fx-background-color: transparent;
+}
