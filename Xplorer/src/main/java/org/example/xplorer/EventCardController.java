@@ -8,6 +8,7 @@ import javafx.scene.text.Text;
 import objects.Card;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class EventCardController implements Initializable {
@@ -31,7 +32,7 @@ public class EventCardController implements Initializable {
 
     public void setData(Card card){
         Image img;
-        img = new Image(getClass().getResourceAsStream(card.getImage()));
+        img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(card.getImage())));
         imageBox.setImage(img);
         nameText.setText((card.getName()));
         dateText.setText(card.getDate());
