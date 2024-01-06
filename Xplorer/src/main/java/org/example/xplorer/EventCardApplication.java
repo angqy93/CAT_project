@@ -9,7 +9,7 @@ import java.io.IOException;
 public class EventCardApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainPageApplication.class.getResource("EventCard.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("EventCard.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 300, 480);
         stage.setTitle("Hello!");
         stage.setScene(scene);
