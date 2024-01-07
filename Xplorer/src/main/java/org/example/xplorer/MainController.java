@@ -77,28 +77,28 @@ public class MainController {
     @FXML
     private Button displayEventButton;
 
-    @FXML
-    private ListView<String> eventListView;
-
     public void connectDisplayEventButton(ActionEvent event) {
+        DatabaseConnection connectNow = new DatabaseConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String connectQuery = "SELECT * FROM eventdata";
+
         try {
-            DatabaseConnection connectNow = new DatabaseConnection();
-            Connection connectDB = connectNow.getConnection();
-
-            String connectQuery = "SELECT event_name FROM eventdata";
-
             Statement statement = connectDB.createStatement();
             ResultSet queryOutput = statement.executeQuery(connectQuery);
 
-            eventListView.getItems().clear(); // Clear existing items in the ListView
+            StringBuilder resultText = new StringBuilder();
 
             while (queryOutput.next()) {
                 // Assuming 'event_name' is a column in your database table
                 String eventName = queryOutput.getString("event_name");
 
-                // Add each event name to the ListView
-                eventListView.getItems().add(eventName);
+                // Append each event name to the result text
+                resultText.append(eventName).append("\n");
             }
+
+            // Set the concatenated result text to the button or another UI element
+            displayEventButton.setText(resultText.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
