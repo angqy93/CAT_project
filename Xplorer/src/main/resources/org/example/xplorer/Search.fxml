@@ -81,12 +81,22 @@
                      </font>
                   </Text>
                   <ListView fx:id="eventListView" layoutX="119.0" layoutY="147.0" onEditStart="#connectDisplayEventButton" onMouseClicked="#handleEventListViewClick" prefHeight="419.0" prefWidth="748.0" />
-                  <Button fx:id="addEventButton" layoutX="150.0" layoutY="587.0" mnemonicParsing="false" onAction="#handleAddEventButton" text="Add Event">
+                  <Button fx:id="addEventButton" layoutX="98.0" layoutY="585.0" mnemonicParsing="false" onAction="#handleAddEventButton" text="Add Event">
                      <font>
                         <Font size="37.0" />
                      </font>
                   </Button>
-                  <Button fx:id="addEventButton1" layoutX="477.0" layoutY="587.0" mnemonicParsing="false" onAction="#handleDeleteEventButton" text="Delete Event">
+                  <Button fx:id="deleteEventButton" layoutX="643.0" layoutY="584.0" mnemonicParsing="false" onAction="#handleDeleteEventButton" text="Delete Event">
+                     <font>
+                        <Font size="37.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="updateEventButton" layoutX="351.0" layoutY="584.0" mnemonicParsing="false" onAction="#handleUpdateEventButton" text="Update Event">
+                     <font>
+                        <Font size="37.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="searchEventButton" layoutX="633.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleSearchEventButton" text="Search Event">
                      <font>
                         <Font size="37.0" />
                      </font>
