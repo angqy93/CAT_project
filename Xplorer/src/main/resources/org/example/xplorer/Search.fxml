@@ -80,12 +80,17 @@
                         <Font size="70.0" />
                      </font>
                   </Text>
-                  <Button fx:id="displayEventButton" layoutX="242.0" layoutY="514.0" mnemonicParsing="false" onAction="#connectDisplayEventButton" text="Display Event">
+                  <ListView fx:id="eventListView" layoutX="119.0" layoutY="147.0" onEditStart="#connectDisplayEventButton" onMouseClicked="#handleEventListViewClick" prefHeight="419.0" prefWidth="748.0" />
+                  <Button fx:id="addEventButton" layoutX="150.0" layoutY="587.0" mnemonicParsing="false" onAction="#handleAddEventButton" text="Add Event">
                      <font>
-                        <Font size="71.0" />
+                        <Font size="37.0" />
                      </font>
                   </Button>
-                  <ListView fx:id="eventListView" layoutX="326.0" layoutY="167.0" prefHeight="318.0" prefWidth="320.0" />
+                  <Button fx:id="addEventButton1" layoutX="477.0" layoutY="587.0" mnemonicParsing="false" onAction="#handleDeleteEventButton" text="Delete Event">
+                     <font>
+                        <Font size="37.0" />
+                     </font>
+                  </Button>
                </children>
             </AnchorPane>
          </content></ScrollPane>

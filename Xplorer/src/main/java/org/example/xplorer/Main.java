@@ -9,28 +9,6 @@ import javafx.stage.StageStyle;
 import javafx.scene.Parent;
 import java.io.IOException;
 import java.util.Objects;
-//public class Main extends Application {
-//    double x,y = 0;
-//    @Override
-//    public void start(Stage primaryStage) throws IOException {
-//        Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
-//        primaryStage.initStyle(StageStyle.UNDECORATED);
-//
-//        root.setOnMousePressed(event -> {
-//            x = event.getSceneX();
-//            y = event.getSceneY();
-//        });
-//
-//        //move window
-//        root.setOnMouseDragged(event -> {
-//            primaryStage.setX(event.getScreenX() - x);
-//            primaryStage.setY(event.getScreenY() - y);
-//        });
-//
-//        primaryStage.setScene(new Scene(root, 780, 550));
-//        primaryStage.setTitle("Waddle");
-//        primaryStage.show();
-//    }
 public class Main extends Application {
     double x, y = 0;
 
