@@ -22,19 +22,20 @@ public class JoinEventController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cards = new ArrayList<>(getCards());
         try {
-            for(Card card:cards){
+            for (Card card : cards) {
                 FXMLLoader fxmlLoader = new FXMLLoader();
-                fxmlLoader.setLocation(getClass().getResource("org/example/xplorer/EventCard.fxml"));
+                fxmlLoader.setLocation(getClass().getResource("EventCard.fxml"));
 
                 VBox vbox = fxmlLoader.load();
                 EventCardController eventCardController = fxmlLoader.getController();
                 eventCardController.setData(card);
                 cardContainer.getChildren().add(vbox);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     public List<Card> getCards(){
         List<Card> ls = new ArrayList<>();
@@ -42,7 +43,7 @@ public class JoinEventController implements Initializable {
         Card card;
 
         for(int i=0; i<50; i++){
-             card = new Card();
+            card = new Card();
             card.setImage("/img/Waddle.png");
             card.setName("Ang");
             card.setDate("date");
