@@ -29,11 +29,11 @@ public class EventCardController implements Initializable {
 
     @FXML
     private Text descriptionText;
-
     public void setData(Card card){
         Image img;
         img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(card.getImage())));
         imageBox.setImage(img);
+        imageBox.setFitHeight(300);;
         nameText.setText((card.getName()));
         dateText.setText(card.getDate());
         timeText.setText(card.getTime());
