@@ -188,7 +188,7 @@ public class MainController {
     }
 
 
-    //Delete Events
+    // Delete Events
     @FXML
     private void handleDeleteEventButton(ActionEvent event) {
         // Create a TextInputDialog
@@ -221,7 +221,24 @@ public class MainController {
         try {
             PreparedStatement preparedStatement = connectDB.prepareStatement(deleteQuery);
             preparedStatement.setString(1, eventName);
-            preparedStatement.executeUpdate();
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Check if any rows were affected (event deleted)
+            if (rowsAffected > 0) {
+                // Event successfully deleted
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle("Deletion Result");
+                successAlert.setHeaderText(null);
+                successAlert.setContentText("Event '" + eventName + "' successfully deleted.");
+                successAlert.showAndWait();
+            } else {
+                // Event not found
+                Alert errorAlert = new Alert(Alert.AlertType.INFORMATION);
+                errorAlert.setTitle("Deletion Result");
+                errorAlert.setHeaderText(null);
+                errorAlert.setContentText("No event found with the specified name.");
+                errorAlert.showAndWait();
+            }
 
             // Commit changes to the database
             connectDB.commit();
@@ -390,6 +407,7 @@ public class MainController {
         }
     }
 
+    //Search Event
     @FXML
     private void handleSearchEventButton(ActionEvent event) {
         // Create a TextInputDialog
