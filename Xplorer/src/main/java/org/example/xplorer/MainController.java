@@ -8,34 +8,52 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
+    @FXML
+    private TableView<MainModel> eventTableView;
+    @FXML
+    private TableColumn<MainModel, Integer> eventDescTableColumn;
+    @FXML
+    private TableColumn<MainModel, String> eventNameTableColumn;
+    @FXML
+    private TableColumn<MainModel, String> eventLocationTableColumn;
+    @FXML
+    private TableColumn<MainModel, String> eventTimeTableColumn;
+    @FXML
+    private TextField keywordTextField;
+
+    @FXML
+    private TableColumn<MainModel, String> eventParticipantsTableColumn;
+
+    ObservableList<MainModel> MainModelObservableList = FXCollections.observableArrayList();
     private Stage stage;
     private Scene scene;
     private Parent root;
 
     public void SwitchToHomePage(ActionEvent event) throws IOException {
-        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("Main.fxml")));
+        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("Home.fxml")));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
         // Get the primary screen
@@ -80,163 +98,89 @@ public class MainController implements Initializable {
         stage.show();
     }
 
-    //List Events
-//    @FXML
-//    private ListView<String> eventListView;
-
-//    public void connectDisplayEventButton() {
-//        DatabaseConnection connectNow = new DatabaseConnection();
-//        Connection connectDB = connectNow.getConnection();
-//
-//        String connectQuery = "SELECT * FROM eventdata";
-//
-//        try {
-//            Statement statement = connectDB.createStatement();
-//            ResultSet queryOutput = statement.executeQuery(connectQuery);
-//
-//            ObservableList<String> eventDataList = FXCollections.observableArrayList();
-//
-//            while (queryOutput.next()) {
-//                // Assuming 'event_name' is a column in your database table
-//                String eventName = queryOutput.getString("event_name");
-//
-//                // Append each event name to the result text
-//                eventDataList.add(eventName);
-//            }
-//
-//            // Set the concatenated result text to the ListView
-//            eventListView.setItems(eventDataList);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-@FXML
-private TableView<EventSearchModel> eventTableView;
-    @FXML
-    private TableColumn<EventSearchModel, Integer> eventDescTableColumn;
-    @FXML
-    private TableColumn<EventSearchModel, String> eventNameTableColumn;
-    @FXML
-    private TableColumn<EventSearchModel, String> eventLocationTableColumn;
-    @FXML
-    private TableColumn<EventSearchModel, String> eventTimeTableColumn;
-    @FXML
-    private TextField keywordTextField;
-ObservableList<EventSearchModel> eventSearchModelObservableList = FXCollections.observableArrayList();
-public void connectDisplayEventButton() {
-    DatabaseConnection connectNow = new DatabaseConnection();
-    Connection connectDB = connectNow.getConnection();
-
-    String connectQuery = "SELECT * FROM eventdata";
-
-    try {
-        Statement statement = connectDB.createStatement();
-        ResultSet queryOutput = statement.executeQuery(connectQuery);
-
-        eventSearchModelObservableList.clear(); // Clear the existing list
-
-        while (queryOutput.next()) {
-            String queryEventName = queryOutput.getString("event_name");
-            String queryEventDesc = queryOutput.getString("event_desc");
-            String queryEventLocation = queryOutput.getString("event_location");
-            String queryEventTime = queryOutput.getString("event_time");
-
-            eventSearchModelObservableList.add(new EventSearchModel(queryEventName, queryEventDesc, queryEventLocation, queryEventTime));
-        }
-
-        // Set the concatenated result text to the TableView
-        eventTableView.setItems(eventSearchModelObservableList);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resource){
-
+    public void connectDisplayEventButton() {
         DatabaseConnection connectNow = new DatabaseConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String eventViewQuery = "SELECT event_name, event_desc, event_location, event_time FROM eventdata";
+        String connectQuery = "SELECT * FROM eventdata";
 
-        try{
+        try {
             Statement statement = connectDB.createStatement();
-            ResultSet queryOutput = statement.executeQuery(eventViewQuery);
+            ResultSet queryOutput = statement.executeQuery(connectQuery);
+
+            MainModelObservableList.clear(); // Clear the existing list
 
             while (queryOutput.next()) {
-
                 String queryEventName = queryOutput.getString("event_name");
                 String queryEventDesc = queryOutput.getString("event_desc");
                 String queryEventLocation = queryOutput.getString("event_location");
                 String queryEventTime = queryOutput.getString("event_time");
 
-
-                eventSearchModelObservableList.add(new EventSearchModel(queryEventName,queryEventDesc,queryEventLocation,queryEventTime));
+                MainModelObservableList.add(new MainModel(queryEventName, queryEventDesc, queryEventLocation, queryEventTime));
             }
 
-            eventNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
-            eventDescTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_desc"));
-            eventLocationTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
-            eventTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_time"));
-
-            eventTableView.setItems(eventSearchModelObservableList);
-
-            FilteredList<EventSearchModel> filteredData = new FilteredList<>(eventSearchModelObservableList, b -> true);
-
-            keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredData.setPredicate(eventSearchModel -> {
-                    if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                        return true;
-                    }
-
-                    String searchKeyword = newValue.toLowerCase();
-
-                    if (eventSearchModel.getEvent_name().toLowerCase().contains(searchKeyword)) {
-                        return true; // Means we found a match in Event Name
-                    } else if (eventSearchModel.getEvent_desc().toLowerCase().contains(searchKeyword)) {
-                        return true; // Means we found a match in Description
-                    } else return false; // No match found
-                });
-            });
-
-            SortedList<EventSearchModel> sortedData = new SortedList<>(filteredData);
-
-            sortedData.comparatorProperty().bind(eventTableView.comparatorProperty());
-
-            eventTableView.setItems(sortedData);
-
-        } catch(SQLException e) {
-
-            Logger.getLogger(EventSearchController.class.getName()).log(Level.SEVERE, null, e);
+            // Set the concatenated result text to the TableView
+            eventTableView.setItems(MainModelObservableList);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Set up search functionality
+        FilteredList<MainModel> filteredData = new FilteredList<>(MainModelObservableList, b -> true);
+        keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(eventSearchModel -> {
+                if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
+                    return true;
+                }
+
+                String searchKeyword = newValue.toLowerCase();
+
+                return eventSearchModel.getEvent_name().toLowerCase().contains(searchKeyword) ||
+                        eventSearchModel.getEvent_desc().toLowerCase().contains(searchKeyword);
+            });
+        });
+
+        // Bind the filtered data to the TableView
+        SortedList<MainModel> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(eventTableView.comparatorProperty());
+        eventTableView.setItems(sortedData);
     }
 
-    //Click into Events
-    @FXML
-    private void handleEventListViewClick(MouseEvent event) {
-        if (event.getClickCount() == 2) { // Check for double-click
-            EventSearchModel selectedEvent = eventTableView.getSelectionModel().getSelectedItem();
+    @Override
+    public void initialize(URL url, ResourceBundle resource) {
+        connectDisplayEventButton(); // Initial data load
 
-            if (selectedEvent != null) {
-                // Call a method to show details of the selected event (e.g., description).
-                showEventDetails(selectedEvent);
-            }
-        }
+        // Set up columns
+        eventNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
+        eventDescTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_desc"));
+        eventLocationTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
+        eventTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_time"));
+
+        // Set up TableView
+        eventTableView.setItems(MainModelObservableList);
+
+        // Set up search functionality
+        FilteredList<MainModel> filteredData = new FilteredList<>(MainModelObservableList, b -> true);
+        keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(MainModel -> {
+                if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
+                    return true;
+                }
+
+                String searchKeyword = newValue.toLowerCase();
+
+                return MainModel.getEvent_name().toLowerCase().contains(searchKeyword) ||
+                        MainModel.getEvent_desc().toLowerCase().contains(searchKeyword);
+            });
+        });
+
+        // Bind the filtered data to the TableView
+        SortedList<MainModel> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(eventTableView.comparatorProperty());
+        eventTableView.setItems(sortedData);
     }
 
-    private void showEventDetails(EventSearchModel eventName) {
-        // Implement the logic to display event details.
-        // You can open a new window, dialog, or update another part of the UI.
-        System.out.println("Selected Event: " + eventName);
-        // Open a new window or dialog to display more details...
-    }
-
-    //ADD events
-    @FXML
-    private Button addEventButton;
-
+    //Add Events
     @FXML
     private void handleAddEventButton(ActionEvent event) {
         // Create TextInputDialogs for event details
@@ -350,139 +294,115 @@ public void connectDisplayEventButton() {
         }
     }
 
-    //Update Events
     @FXML
     private void handleUpdateEventButton(ActionEvent event) {
-        // Create TextInputDialogs for event details
-        TextInputDialog nameDialog = new TextInputDialog();
-        nameDialog.setTitle("Update Event");
-        nameDialog.setHeaderText("Enter the current event name to update:");
-        nameDialog.setContentText("Event Name:");
+        // Create a TextInputDialog
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Update Event");
+        dialog.setHeaderText("Enter the event name to update:");
+        dialog.setContentText("Event Name:");
 
         // Show the dialog and wait for the user's input
-        Optional<String> nameResult = nameDialog.showAndWait();
+        Optional<String> result = dialog.showAndWait();
 
-        // If the user pressed "Cancel" in the name dialog, exit
-        if (!nameResult.isPresent()) {
-            return;
-        }
+        // If the user entered a name, update the corresponding event in the database and update the list
+        result.ifPresent(eventName -> {
+            // Get the selected event from the observable list
+            MainModel selectedEvent = MainModelObservableList.stream()
+                    .filter(eventModel -> eventModel.getEvent_name().equals(eventName))
+                    .findFirst()
+                    .orElse(null);
 
-        // Get the selected event from the ListView
-        Event selectedEvent = getEventByName(nameResult.get());
+            if (selectedEvent != null) {
+                // Pre-fill existing data in the input fields
+                String existingName = selectedEvent.getEvent_name();
+                String existingDesc = selectedEvent.getEvent_desc();
+                String existingLocation = selectedEvent.getEvent_location();
+                String existingTime = selectedEvent.getEvent_time();
 
-        if (selectedEvent != null) {
-            // Create a new TextInputDialog with the current event name as the default value
-            TextInputDialog updateDialog = new TextInputDialog(selectedEvent.getEventName());
-            updateDialog.setTitle("Update Event");
-            updateDialog.setHeaderText("Enter the new event name:");
-            updateDialog.setContentText("New Event Name:");
+                // Create TextInputDialogs for event details with existing values as default
+                TextInputDialog nameDialog = createTextInputDialog("Enter the new event name:", "New Event Name:", existingName);
+                TextInputDialog descDialog = createTextInputDialog("Enter the new event description:", "New Event Description:", existingDesc);
+                TextInputDialog locationDialog = createTextInputDialog("Enter the new event location:", "New Event Location:", existingLocation);
+                TextInputDialog timeDialog = createTextInputDialog("Enter the new event time (YYYY-MM-DD HH:mm:ss):", "New Event Time:", existingTime);
 
-            // Show the dialog and wait for the user's input
-            Optional<String> updateResult = updateDialog.showAndWait();
+                // Show the dialogs and wait for the user's input
+                Optional<String> newNameResult = nameDialog.showAndWait();
+                if (!newNameResult.isPresent()) {
+                    return; // Exit if the user pressed "Cancel" in the name dialog
+                }
 
-            // If the user pressed "Cancel" in the update dialog, exit
-            if (!updateResult.isPresent()) {
-                return;
+                Optional<String> newDescResult = descDialog.showAndWait();
+                if (!newDescResult.isPresent()) {
+                    return; // Exit if the user pressed "Cancel" in the description dialog
+                }
+
+                Optional<String> newLocationResult = locationDialog.showAndWait();
+                if (!newLocationResult.isPresent()) {
+                    return; // Exit if the user pressed "Cancel" in the location dialog
+                }
+
+                Optional<String> newTimeResult = timeDialog.showAndWait();
+                if (!newTimeResult.isPresent()) {
+                    return; // Exit if the user pressed "Cancel" in the time dialog or provided an invalid datetime
+                }
+
+                // Update the event in the database and update the observable list
+                updateEventInDatabase(selectedEvent, newNameResult.get(), newDescResult.get(), newLocationResult.get(), newTimeResult.get());
+
+                // Refresh the event list
+                connectDisplayEventButton();
+            } else {
+                // Event not found
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Update Result");
+                errorAlert.setHeaderText(null);
+                errorAlert.setContentText("No event found with the specified name.");
+                errorAlert.showAndWait();
             }
-
-            // Create a new TextInputDialog for updating the event description
-            TextInputDialog descDialog = new TextInputDialog(selectedEvent.getEventDesc());
-            descDialog.setTitle("Update Event");
-            descDialog.setHeaderText("Enter the new event description:");
-            descDialog.setContentText("New Event Description:");
-
-            // Show the dialog and wait for the user's input
-            Optional<String> descResult = descDialog.showAndWait();
-
-            // If the user pressed "Cancel" in the description dialog, exit
-            if (!descResult.isPresent()) {
-                return;
-            }
-
-            // Create a new TextInputDialog for updating the event location
-            TextInputDialog locationDialog = new TextInputDialog(selectedEvent.getEventLocation());
-            locationDialog.setTitle("Update Event");
-            locationDialog.setHeaderText("Enter the new event location:");
-            locationDialog.setContentText("New Event Location:");
-
-            // Show the dialog and wait for the user's input
-            Optional<String> locationResult = locationDialog.showAndWait();
-
-            // If the user pressed "Cancel" in the location dialog, exit
-            if (!locationResult.isPresent()) {
-                return;
-            }
-
-            // Create a new TextInputDialog for updating the event time
-            TextInputDialog timeDialog = new TextInputDialog(selectedEvent.getEventTime());
-            timeDialog.setTitle("Update Event");
-            timeDialog.setHeaderText("Enter the new event time:");
-            timeDialog.setContentText("New Event Time (YYYY-MM-DD HH:mm:ss):");
-
-            // Show the dialog and wait for the user's input
-            Optional<String> timeResult = timeDialog.showAndWait();
-
-            // If the user pressed "Cancel" in the time dialog, exit
-            if (!timeResult.isPresent()) {
-                return;
-            }
-
-            // Validate the entered datetime format
-            String validatedTime = getValidDateTime(timeResult.get());
-
-            if (validatedTime == null) {
-                // Prompt the user to enter a valid datetime and exit
-                showAlert("Invalid Datetime", "Please enter a valid datetime format (YYYY-MM-DD HH:mm:ss).");
-                return;
-            }
-
-            // Update the event in the database
-            updateEventInDatabase(selectedEvent.getId(), updateResult.get(), descResult.get(), locationResult.get(), validatedTime);
-
-            // Refresh the event list
-            connectDisplayEventButton();
-        }
+        });
     }
 
-    private String getValidDateTime(String inputDateTime) {
-        try {
-            // Try parsing the input datetime
-            LocalDateTime.parse(inputDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            return inputDateTime;
-        } catch (DateTimeParseException e) {
-            // Return null if parsing fails
-            return null;
-        }
+    private TextInputDialog createTextInputDialog(String headerText, String contentText, String defaultValue) {
+        TextInputDialog dialog = new TextInputDialog(defaultValue);
+        dialog.setTitle("Update Event");
+        dialog.setHeaderText(headerText);
+        dialog.setContentText(contentText);
+        return dialog;
     }
 
-    private void showAlert(String title, String content) {
-        // Create and show an alert with the specified title and content
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    private void updateEventInDatabase(int eventId, String newEventName, String newEventDescription, String newEventLocation, String newEventTime) {
+    private void updateEventInDatabase(MainModel existingEvent, String newName, String newDesc, String newLocation, String newTime) {
         // Connect to the database and execute an UPDATE query to update the event
         DatabaseConnection connectNow = new DatabaseConnection();
         Connection connectDB = connectNow.getConnection();
 
         // Use a prepared statement to avoid SQL injection
-        String updateQuery = "UPDATE eventdata SET event_name = ?, event_desc = ?, event_location = ?, event_time = ? WHERE event_id = ?";
+        String updateQuery = "UPDATE eventdata SET event_name = ?, event_desc = ?, event_location = ?, event_time = ? WHERE event_name = ?";
 
         try {
             PreparedStatement preparedStatement = connectDB.prepareStatement(updateQuery);
-            preparedStatement.setString(1, newEventName);
-            preparedStatement.setString(2, newEventDescription);
-            preparedStatement.setString(3, newEventLocation);
-            preparedStatement.setString(4, newEventTime);
-            preparedStatement.setInt(5, eventId);
+            preparedStatement.setString(1, newName);
+            preparedStatement.setString(2, newDesc);
+            preparedStatement.setString(3, newLocation);
+            preparedStatement.setString(4, newTime);
+            preparedStatement.setString(5, existingEvent.getEvent_name());
             preparedStatement.executeUpdate();
+
+            // Update the existing event in the observable list
+            existingEvent.setEvent_name(newName);
+            existingEvent.setEvent_desc(newDesc);
+            existingEvent.setEvent_location(newLocation);
+            existingEvent.setEvent_time(newTime);
 
             // Commit changes to the database
             connectDB.commit();
+
+            // Show a success alert
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            successAlert.setTitle("Update Result");
+            successAlert.setHeaderText(null);
+            successAlert.setContentText("Event updated successfully.");
+            successAlert.showAndWait();
         } catch (SQLException e) {
             e.printStackTrace();
             // Handle the exception according to your application's needs
@@ -497,49 +417,6 @@ public void connectDisplayEventButton() {
                 // Handle the exception according to your application's needs
             }
         }
-    }
-
-
-    private Event getEventByName(String eventName) {
-        // Connect to the database and retrieve the event by name
-        DatabaseConnection connectNow = new DatabaseConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        // Use a prepared statement to avoid SQL injection
-        String selectQuery = "SELECT * FROM eventdata WHERE event_name = ?";
-        Event selectedEvent = null;
-
-        try {
-            PreparedStatement preparedStatement = connectDB.prepareStatement(selectQuery);
-            preparedStatement.setString(1, eventName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            // Check if the result set has any rows
-            if (resultSet.next()) {
-                // Populate the selectedEvent object with data from the result set
-                selectedEvent = new Event(
-                        resultSet.getInt("event_id"),
-                        resultSet.getString("event_name"),
-                        resultSet.getString("event_desc")
-                        // Add other properties as needed
-                );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception according to your application's needs
-        } finally {
-            // Close the database connection in a finally block to ensure it gets closed even if an exception occurs
-            try {
-                if (connectDB != null) {
-                    connectDB.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Handle the exception according to your application's needs
-            }
-        }
-
-        return selectedEvent;
     }
 
     public class Event {
@@ -622,6 +499,16 @@ public void connectDisplayEventButton() {
 
             // Check if any rows were affected (event deleted)
             if (rowsAffected > 0) {
+                // Remove the deleted event from the observable list
+                MainModel eventToRemove = MainModelObservableList.stream()
+                        .filter(event -> event.getEvent_name().equals(eventName))
+                        .findFirst()
+                        .orElse(null);
+
+                if (eventToRemove != null) {
+                    MainModelObservableList.remove(eventToRemove);
+                }
+
                 // Event successfully deleted
                 Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                 successAlert.setTitle("Deletion Result");
@@ -655,141 +542,51 @@ public void connectDisplayEventButton() {
         }
     }
 
-//    //Search Event
-//    @FXML
-//    private void handleSearchEventButton(ActionEvent event) {
-//        // Create a TextInputDialog
-//        TextInputDialog dialog = new TextInputDialog();
-//        dialog.setTitle("Search Event");
-//        dialog.setHeaderText("Enter the event name to search:");
-//        dialog.setContentText("Event Name:");
-//
-//        // Show the dialog and wait for the user's input
-//        Optional<String> result = dialog.showAndWait();
-//
-//        // If the user entered a name, search for the event in the database and display the results
-//        result.ifPresent(eventName -> {
-//            // Search for the event in the database
-//            List<Event> searchResults = searchEventInDatabase(eventName);
-//
-//            // Clear the existing items in the ListView
-//            eventListView.getItems().clear();
-//
-//            // Display the search results in the ListView
-//            if (!searchResults.isEmpty()) {
-//                List<String> eventNames = searchResults.stream().map(Event::getEventName).collect(Collectors.toList());
-//                ObservableList<String> observableList = FXCollections.observableArrayList(eventNames);
-//                eventListView.setItems(observableList);
-//            } else {
-//                // Handle the case when no results are found
-//                showAlert("Search Results", "No events found with the specified name.");
-//
-//                // Refresh the event list
-//                connectDisplayEventButton();
-//            }
-//        });
-//    }
-
-    private List<Event> searchEventInDatabase(String eventName) {
-        // Connect to the database and retrieve events by name
-        DatabaseConnection connectNow = new DatabaseConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        // Use a prepared statement to avoid SQL injection
-        String selectQuery = "SELECT * FROM eventdata WHERE event_name LIKE ?";
-        List<Event> searchResults = new ArrayList<>();
-
-        try {
-            PreparedStatement preparedStatement = connectDB.prepareStatement(selectQuery);
-            preparedStatement.setString(1, "%" + eventName + "%"); // Use LIKE for partial matching
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            // Populate the searchResults list with events from the result set
-            while (resultSet.next()) {
-                Event event = new Event(
-                        resultSet.getInt("event_id"),
-                        resultSet.getString("event_name"),
-                        resultSet.getString("event_desc")
-                        // Add other properties as needed
-                );
-                searchResults.add(event);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception according to your application's needs
-        } finally {
-            // Close the database connection in a finally block to ensure it gets closed even if an exception occurs
-            try {
-                if (connectDB != null) {
-                    connectDB.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Handle the exception according to your application's needs
+    @FXML
+    private void handleEventClick(MouseEvent event) {
+        if (event.getClickCount() == 1) { // Check if it's a single click
+            MainModel selectedEvent = eventTableView.getSelectionModel().getSelectedItem();
+            if (selectedEvent != null) {
+                showEventDetails(selectedEvent);
             }
         }
-
-        return searchResults;
     }
 
-    private void initializeEventSearch(TableView<EventSearchModel> eventTableView) {
-            DatabaseConnection connectNow = new DatabaseConnection();
-            Connection connectDB = connectNow.getConnection();
+    private void showEventDetails(MainModel selectedEvent) {
+        // Create a new Stage for the pop-up window
+        Stage popupStage = new Stage();
 
-            String eventViewQuery = "SELECT event_name, event_desc, event_location, event_time FROM eventdata";
+        // Create UI components to display event details
+        Label eventNameLabel = new Label("Event Name: " + selectedEvent.getEvent_name());
+        Label eventDescLabel = new Label("Description: " + selectedEvent.getEvent_desc());
+        // ... other UI components ...
 
-            try{
-                Statement statement = connectDB.createStatement();
-                ResultSet queryOutput = statement.executeQuery(eventViewQuery);
+        // Add UI components to the BorderPane
+        BorderPane content = new BorderPane();
+        content.setTop(eventNameLabel);
+        content.setCenter(eventDescLabel);
+        // ... other UI components ...
 
-                while (queryOutput.next()) {
+        // Add a close button
+        Button closeButton = new Button("Close");
+        closeButton.setOnAction(e -> popupStage.close());
+        content.setBottom(closeButton);
 
-                    String queryEventName = queryOutput.getString("event_name");
-                    String queryEventDesc = queryOutput.getString("event_desc");
-                    String queryEventLocation = queryOutput.getString("event_location");
-                    String queryEventTime = queryOutput.getString("event_time");
+        // Set some styling for the BorderPane
+        content.setStyle("-fx-background-color: lightgrey; -fx-padding: 10;");
 
+        // Create a Scene with the BorderPane as the root
+        Scene scene = new Scene(content, 300, 200); // You can adjust the size as needed
 
-                    eventSearchModelObservableList.add(new EventSearchModel(queryEventName,queryEventDesc,queryEventLocation,queryEventTime));
-                }
+        // Set the scene for the pop-up Stage
+        popupStage.setScene(scene);
 
-                eventNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
-                eventDescTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_desc"));
-                eventLocationTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
-                eventTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_time"));
+        // Set some properties for the pop-up Stage
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(eventTableView.getScene().getWindow());
+        popupStage.setTitle("Event Details");
 
-                this.eventTableView.setItems(eventSearchModelObservableList);
-
-                FilteredList<EventSearchModel> filteredData = new FilteredList<>(eventSearchModelObservableList, b -> true);
-
-                keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    filteredData.setPredicate(eventSearchModel -> {
-                        if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                            return true;
-                        }
-
-                        String searchKeyword = newValue.toLowerCase();
-
-                        if (eventSearchModel.getEvent_name().toLowerCase().contains(searchKeyword)) {
-                            return true; // Means we found a match in Event Name
-                        } else if (eventSearchModel.getEvent_desc().toLowerCase().contains(searchKeyword)) {
-                            return true; // Means we found a match in Description
-                        } else return false; // No match found
-                    });
-                });
-
-                SortedList<EventSearchModel> sortedData = new SortedList<>(filteredData);
-
-                sortedData.comparatorProperty().bind(this.eventTableView.comparatorProperty());
-
-                this.eventTableView.setItems(sortedData);
-
-            } catch(SQLException e) {
-
-                Logger.getLogger(EventSearchController.class.getName()).log(Level.SEVERE, null, e);
-                e.printStackTrace();
-            }
-        }
-
+        // Show the pop-up Stage
+        popupStage.show();
+    }
 }
-

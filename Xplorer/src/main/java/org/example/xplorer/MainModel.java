@@ -1,10 +1,11 @@
 package org.example.xplorer;
 
-public class EventSearchModel {
+public class MainModel {
     Integer event_id;
     String event_name, event_desc, event_location, event_time;
 
-    public EventSearchModel(String event_name, String event_desc, String event_location, String event_time) {
+
+    public MainModel(String event_name, String event_desc, String event_location, String event_time) {
         this.event_name = event_name;
         this.event_desc = event_desc;
         this.event_location = event_location;
@@ -50,4 +51,5 @@ public class EventSearchModel {
     public void setEvent_time(String event_time) {
         this.event_time = event_time;
     }
+
 }
