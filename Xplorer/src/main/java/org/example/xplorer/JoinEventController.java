@@ -30,7 +30,7 @@ public class JoinEventController implements Initializable {
 
         for(int i=0; i<4; i++){
             card = new Card();
-            card.setImage("/img/Waddle.png");
+            card.setImage("/img/Varsity.png");
             card.setName("Ang");
             card.setDate("date");
             card.setTime("time");

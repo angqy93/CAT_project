@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -73,34 +75,42 @@
    <center>
       <ScrollPane fx:id="contentArea" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <content>
-            <AnchorPane prefHeight="731.0" prefWidth="1000.0">
+            <AnchorPane prefHeight="731.0" prefWidth="990.0">
                <children>
-                  <Text layoutX="196.0" layoutY="112.0" strokeType="OUTSIDE" strokeWidth="0.0" text="This is Search Page">
+                  <Text layoutX="204.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="List of Events">
                      <font>
                         <Font size="70.0" />
                      </font>
                   </Text>
-                  <ListView fx:id="eventListView" layoutX="119.0" layoutY="147.0" onEditStart="#connectDisplayEventButton" onMouseClicked="#handleEventListViewClick" prefHeight="419.0" prefWidth="748.0" />
-                  <Button fx:id="addEventButton" layoutX="98.0" layoutY="585.0" mnemonicParsing="false" onAction="#handleAddEventButton" text="Add Event">
+                  <ListView fx:id="eventListView" layoutX="119.0" layoutY="147.0" onEditStart="#connectDisplayEventButton" onMouseClicked="#handleEventListViewClick" prefHeight="419.0" prefWidth="545.0" />
+                  <Button fx:id="addEventButton" layoutX="685.0" layoutY="175.0" mnemonicParsing="false" onAction="#handleAddEventButton" prefHeight="104.0" prefWidth="280.0" text="Add Event">
                      <font>
                         <Font size="37.0" />
                      </font>
                   </Button>
-                  <Button fx:id="deleteEventButton" layoutX="643.0" layoutY="584.0" mnemonicParsing="false" onAction="#handleDeleteEventButton" text="Delete Event">
+                  <Button fx:id="deleteEventButton" layoutX="685.0" layoutY="449.0" mnemonicParsing="false" onAction="#handleDeleteEventButton" prefHeight="104.0" prefWidth="280.0" text="Delete Event">
                      <font>
                         <Font size="37.0" />
                      </font>
                   </Button>
-                  <Button fx:id="updateEventButton" layoutX="351.0" layoutY="584.0" mnemonicParsing="false" onAction="#handleUpdateEventButton" text="Update Event">
+                  <Button fx:id="updateEventButton" layoutX="685.0" layoutY="314.0" mnemonicParsing="false" onAction="#handleUpdateEventButton" prefHeight="104.0" prefWidth="280.0" text="Update Event">
                      <font>
                         <Font size="37.0" />
                      </font>
                   </Button>
-                  <Button fx:id="searchEventButton" layoutX="633.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleSearchEventButton" text="Search Event">
+                  <Button fx:id="searchEventButton" layoutX="383.0" layoutY="604.0" mnemonicParsing="false" onAction="#handleSearchEventButton" text="Search Event">
                      <font>
                         <Font size="37.0" />
                      </font>
                   </Button>
+                  <TableView fx:id="eventTableView" layoutX="-409.0" layoutY="253.0" prefHeight="521.0" prefWidth="935.0">
+                     <columns>
+                        <TableColumn fx:id="eventNameTableColumn" prefWidth="213.14294815063477" text="Name" />
+                        <TableColumn fx:id="eventDescTableColumn" prefWidth="397.7142028808594" text="Description" />
+                        <TableColumn fx:id="eventLocationTableColumn" prefWidth="177.14276123046875" text="Location" />
+                        <TableColumn fx:id="eventTimeTableColumn" prefWidth="146.8570556640625" text="Time" />
+                     </columns>
+                  </TableView>
                </children>
             </AnchorPane>
          </content></ScrollPane>

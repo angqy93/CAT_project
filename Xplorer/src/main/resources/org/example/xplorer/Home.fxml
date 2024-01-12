@@ -86,7 +86,7 @@
                     </columns>
                   </TableView>
                   <TextField fx:id="keywordTextField" layoutX="171.0" layoutY="92.0" prefHeight="32.0" prefWidth="794.0" />
-                  <Text layoutX="33.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search Event">
+                  <Text layoutX="278.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Home Page">
                      <font>
                         <Font size="22.0" />
                      </font>

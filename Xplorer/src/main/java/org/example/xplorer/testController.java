@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class MainController implements Initializable {
+public class testController{
 
     private Stage stage;
     private Scene scene;
@@ -81,143 +81,49 @@ public class MainController implements Initializable {
     }
 
     //List Events
-//    @FXML
-//    private ListView<String> eventListView;
-
-//    public void connectDisplayEventButton() {
-//        DatabaseConnection connectNow = new DatabaseConnection();
-//        Connection connectDB = connectNow.getConnection();
-//
-//        String connectQuery = "SELECT * FROM eventdata";
-//
-//        try {
-//            Statement statement = connectDB.createStatement();
-//            ResultSet queryOutput = statement.executeQuery(connectQuery);
-//
-//            ObservableList<String> eventDataList = FXCollections.observableArrayList();
-//
-//            while (queryOutput.next()) {
-//                // Assuming 'event_name' is a column in your database table
-//                String eventName = queryOutput.getString("event_name");
-//
-//                // Append each event name to the result text
-//                eventDataList.add(eventName);
-//            }
-//
-//            // Set the concatenated result text to the ListView
-//            eventListView.setItems(eventDataList);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-@FXML
-private TableView<EventSearchModel> eventTableView;
     @FXML
-    private TableColumn<EventSearchModel, Integer> eventDescTableColumn;
-    @FXML
-    private TableColumn<EventSearchModel, String> eventNameTableColumn;
-    @FXML
-    private TableColumn<EventSearchModel, String> eventLocationTableColumn;
-    @FXML
-    private TableColumn<EventSearchModel, String> eventTimeTableColumn;
-    @FXML
-    private TextField keywordTextField;
-ObservableList<EventSearchModel> eventSearchModelObservableList = FXCollections.observableArrayList();
-public void connectDisplayEventButton() {
-    DatabaseConnection connectNow = new DatabaseConnection();
-    Connection connectDB = connectNow.getConnection();
+    private ListView<String> eventListView;
 
-    String connectQuery = "SELECT * FROM eventdata";
-
-    try {
-        Statement statement = connectDB.createStatement();
-        ResultSet queryOutput = statement.executeQuery(connectQuery);
-
-        eventSearchModelObservableList.clear(); // Clear the existing list
-
-        while (queryOutput.next()) {
-            String queryEventName = queryOutput.getString("event_name");
-            String queryEventDesc = queryOutput.getString("event_desc");
-            String queryEventLocation = queryOutput.getString("event_location");
-            String queryEventTime = queryOutput.getString("event_time");
-
-            eventSearchModelObservableList.add(new EventSearchModel(queryEventName, queryEventDesc, queryEventLocation, queryEventTime));
-        }
-
-        // Set the concatenated result text to the TableView
-        eventTableView.setItems(eventSearchModelObservableList);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resource){
-
+    public void connectDisplayEventButton() {
         DatabaseConnection connectNow = new DatabaseConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String eventViewQuery = "SELECT event_name, event_desc, event_location, event_time FROM eventdata";
+        String connectQuery = "SELECT * FROM eventdata";
 
-        try{
+        try {
             Statement statement = connectDB.createStatement();
-            ResultSet queryOutput = statement.executeQuery(eventViewQuery);
+            ResultSet queryOutput = statement.executeQuery(connectQuery);
+
+            ObservableList<String> eventDataList = FXCollections.observableArrayList();
 
             while (queryOutput.next()) {
+                // Assuming 'event_name' is a column in your database table
+                String eventName = queryOutput.getString("event_name");
 
-                String queryEventName = queryOutput.getString("event_name");
-                String queryEventDesc = queryOutput.getString("event_desc");
-                String queryEventLocation = queryOutput.getString("event_location");
-                String queryEventTime = queryOutput.getString("event_time");
-
-
-                eventSearchModelObservableList.add(new EventSearchModel(queryEventName,queryEventDesc,queryEventLocation,queryEventTime));
+                // Append each event name to the result text
+                eventDataList.add(eventName);
             }
 
-            eventNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
-            eventDescTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_desc"));
-            eventLocationTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
-            eventTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_time"));
-
-            eventTableView.setItems(eventSearchModelObservableList);
-
-            FilteredList<EventSearchModel> filteredData = new FilteredList<>(eventSearchModelObservableList, b -> true);
-
-            keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredData.setPredicate(eventSearchModel -> {
-                    if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                        return true;
-                    }
-
-                    String searchKeyword = newValue.toLowerCase();
-
-                    if (eventSearchModel.getEvent_name().toLowerCase().contains(searchKeyword)) {
-                        return true; // Means we found a match in Event Name
-                    } else if (eventSearchModel.getEvent_desc().toLowerCase().contains(searchKeyword)) {
-                        return true; // Means we found a match in Description
-                    } else return false; // No match found
-                });
-            });
-
-            SortedList<EventSearchModel> sortedData = new SortedList<>(filteredData);
-
-            sortedData.comparatorProperty().bind(eventTableView.comparatorProperty());
-
-            eventTableView.setItems(sortedData);
-
-        } catch(SQLException e) {
-
-            Logger.getLogger(EventSearchController.class.getName()).log(Level.SEVERE, null, e);
+            // Set the concatenated result text to the ListView
+            eventListView.setItems(eventDataList);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void initialize() {
+        // Call connectDisplayEventButton to initialize the data when the page is loaded
+        connectDisplayEventButton();
+
+//        initializeEventSearch();
     }
 
     //Click into Events
     @FXML
     private void handleEventListViewClick(MouseEvent event) {
         if (event.getClickCount() == 2) { // Check for double-click
-            EventSearchModel selectedEvent = eventTableView.getSelectionModel().getSelectedItem();
+            String selectedEvent = eventListView.getSelectionModel().getSelectedItem();
 
             if (selectedEvent != null) {
                 // Call a method to show details of the selected event (e.g., description).
@@ -226,7 +132,7 @@ public void connectDisplayEventButton() {
         }
     }
 
-    private void showEventDetails(EventSearchModel eventName) {
+    private void showEventDetails(String eventName) {
         // Implement the logic to display event details.
         // You can open a new window, dialog, or update another part of the UI.
         System.out.println("Selected Event: " + eventName);
@@ -655,40 +561,40 @@ public void connectDisplayEventButton() {
         }
     }
 
-//    //Search Event
-//    @FXML
-//    private void handleSearchEventButton(ActionEvent event) {
-//        // Create a TextInputDialog
-//        TextInputDialog dialog = new TextInputDialog();
-//        dialog.setTitle("Search Event");
-//        dialog.setHeaderText("Enter the event name to search:");
-//        dialog.setContentText("Event Name:");
-//
-//        // Show the dialog and wait for the user's input
-//        Optional<String> result = dialog.showAndWait();
-//
-//        // If the user entered a name, search for the event in the database and display the results
-//        result.ifPresent(eventName -> {
-//            // Search for the event in the database
-//            List<Event> searchResults = searchEventInDatabase(eventName);
-//
-//            // Clear the existing items in the ListView
-//            eventListView.getItems().clear();
-//
-//            // Display the search results in the ListView
-//            if (!searchResults.isEmpty()) {
-//                List<String> eventNames = searchResults.stream().map(Event::getEventName).collect(Collectors.toList());
-//                ObservableList<String> observableList = FXCollections.observableArrayList(eventNames);
-//                eventListView.setItems(observableList);
-//            } else {
-//                // Handle the case when no results are found
-//                showAlert("Search Results", "No events found with the specified name.");
-//
-//                // Refresh the event list
-//                connectDisplayEventButton();
-//            }
-//        });
-//    }
+    //Search Event
+    @FXML
+    private void handleSearchEventButton(ActionEvent event) {
+        // Create a TextInputDialog
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Search Event");
+        dialog.setHeaderText("Enter the event name to search:");
+        dialog.setContentText("Event Name:");
+
+        // Show the dialog and wait for the user's input
+        Optional<String> result = dialog.showAndWait();
+
+        // If the user entered a name, search for the event in the database and display the results
+        result.ifPresent(eventName -> {
+            // Search for the event in the database
+            List<Event> searchResults = searchEventInDatabase(eventName);
+
+            // Clear the existing items in the ListView
+            eventListView.getItems().clear();
+
+            // Display the search results in the ListView
+            if (!searchResults.isEmpty()) {
+                List<String> eventNames = searchResults.stream().map(Event::getEventName).collect(Collectors.toList());
+                ObservableList<String> observableList = FXCollections.observableArrayList(eventNames);
+                eventListView.setItems(observableList);
+            } else {
+                // Handle the case when no results are found
+                showAlert("Search Results", "No events found with the specified name.");
+
+                // Refresh the event list
+                connectDisplayEventButton();
+            }
+        });
+    }
 
     private List<Event> searchEventInDatabase(String eventName) {
         // Connect to the database and retrieve events by name
@@ -731,65 +637,90 @@ public void connectDisplayEventButton() {
 
         return searchResults;
     }
-
-    private void initializeEventSearch(TableView<EventSearchModel> eventTableView) {
-            DatabaseConnection connectNow = new DatabaseConnection();
-            Connection connectDB = connectNow.getConnection();
-
-            String eventViewQuery = "SELECT event_name, event_desc, event_location, event_time FROM eventdata";
-
-            try{
-                Statement statement = connectDB.createStatement();
-                ResultSet queryOutput = statement.executeQuery(eventViewQuery);
-
-                while (queryOutput.next()) {
-
-                    String queryEventName = queryOutput.getString("event_name");
-                    String queryEventDesc = queryOutput.getString("event_desc");
-                    String queryEventLocation = queryOutput.getString("event_location");
-                    String queryEventTime = queryOutput.getString("event_time");
-
-
-                    eventSearchModelObservableList.add(new EventSearchModel(queryEventName,queryEventDesc,queryEventLocation,queryEventTime));
-                }
-
-                eventNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
-                eventDescTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_desc"));
-                eventLocationTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
-                eventTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_time"));
-
-                this.eventTableView.setItems(eventSearchModelObservableList);
-
-                FilteredList<EventSearchModel> filteredData = new FilteredList<>(eventSearchModelObservableList, b -> true);
-
-                keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    filteredData.setPredicate(eventSearchModel -> {
-                        if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
-                            return true;
-                        }
-
-                        String searchKeyword = newValue.toLowerCase();
-
-                        if (eventSearchModel.getEvent_name().toLowerCase().contains(searchKeyword)) {
-                            return true; // Means we found a match in Event Name
-                        } else if (eventSearchModel.getEvent_desc().toLowerCase().contains(searchKeyword)) {
-                            return true; // Means we found a match in Description
-                        } else return false; // No match found
-                    });
-                });
-
-                SortedList<EventSearchModel> sortedData = new SortedList<>(filteredData);
-
-                sortedData.comparatorProperty().bind(this.eventTableView.comparatorProperty());
-
-                this.eventTableView.setItems(sortedData);
-
-            } catch(SQLException e) {
-
-                Logger.getLogger(EventSearchController.class.getName()).log(Level.SEVERE, null, e);
-                e.printStackTrace();
-            }
-        }
-
 }
 
+//    @FXML
+//    public void initializeJoinPage() {
+//        // Call connectDisplayEventButton to initialize the data when the page is loaded
+//        connectDisplayEventButton();
+//
+//        // Initialize the event search functionality
+//        initializeEventSearch(eventTableView);
+//    }
+//    @FXML
+//    private TableView<EventSearchModel> eventTableView;
+//    @FXML
+//    private TableColumn<EventSearchModel, Integer> eventDescTableColumn;
+//    @FXML
+//    private TableColumn<EventSearchModel, String> eventNameTableColumn;
+//    @FXML
+//    private TableColumn<EventSearchModel, String> eventLocationTableColumn;
+//    @FXML
+//    private TableColumn<EventSearchModel, String> eventTimeTableColumn;
+//    @FXML
+//    private TextField keywordTextField;
+//    ObservableList<EventSearchModel> eventSearchModelObservableList = FXCollections.observableArrayList();
+//    private void initializeEventSearch(TableView<EventSearchModel> eventTableView) {
+//            DatabaseConnection connectNow = new DatabaseConnection();
+//            Connection connectDB = connectNow.getConnection();
+//
+//            String eventViewQuery = "SELECT event_name, event_desc, event_location, event_time FROM eventdata";
+//
+//            try{
+//                Statement statement = connectDB.createStatement();
+//                ResultSet queryOutput = statement.executeQuery(eventViewQuery);
+//
+//                while (queryOutput.next()) {
+//
+//                    String queryEventName = queryOutput.getString("event_name");
+//                    String queryEventDesc = queryOutput.getString("event_desc");
+//                    String queryEventLocation = queryOutput.getString("event_location");
+//                    String queryEventTime = queryOutput.getString("event_time");
+//
+//
+//                    eventSearchModelObservableList.add(new EventSearchModel(queryEventName,queryEventDesc,queryEventLocation,queryEventTime));
+//                }
+//
+//                eventNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_name"));
+//                eventDescTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_desc"));
+//                eventLocationTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_location"));
+//                eventTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("event_time"));
+//
+//                this.eventTableView.setItems(eventSearchModelObservableList);
+//
+//                FilteredList<EventSearchModel> filteredData = new FilteredList<>(eventSearchModelObservableList, b -> true);
+//
+//                keywordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+//                    filteredData.setPredicate(eventSearchModel -> {
+//                        if (newValue == null || newValue.isEmpty() || newValue.isBlank()) {
+//                            return true;
+//                        }
+//
+//                        String searchKeyword = newValue.toLowerCase();
+//
+//                        if (eventSearchModel.getEvent_name().toLowerCase().contains(searchKeyword)) {
+//                            return true; // Means we found a match in Event Name
+//                        } else if (eventSearchModel.getEvent_desc().toLowerCase().contains(searchKeyword)) {
+//                            return true; // Means we found a match in Description
+//                        } else return false; // No match found
+//                    });
+//                });
+//
+//                SortedList<EventSearchModel> sortedData = new SortedList<>(filteredData);
+//
+//                sortedData.comparatorProperty().bind(this.eventTableView.comparatorProperty());
+//
+//                this.eventTableView.setItems(sortedData);
+//
+//            } catch(SQLException e) {
+//
+//                Logger.getLogger(EventSearchController.class.getName()).log(Level.SEVERE, null, e);
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    public void initializeJoinPage(URL url, ResourceBundle resource) {
+//        connectDisplayEventButton();
+//        initializeEventSearch(eventTableView);
+//    }
+//}
